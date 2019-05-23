@@ -28,7 +28,7 @@ commands = [
     'run bash sudo service docker stop',
 
     ### Give your Docker space
-    'run bash sudo truncate -s +2000MB /bootflash/dockerpart',
+    'run bash sudo truncate -s +1000MB /bootflash/dockerpart',
     'run bash sudo e2fsck -f /bootflash/dockerpart',
     'run bash sudo /sbin/resize2fs /bootflash/dockerpart',
     'run bash sudo e2fsck -f /bootflash/dockerpart',
