@@ -56,6 +56,6 @@ done
 # Copy the configuration directory to each switch
 for i in $(seq 101 104); do \
     echo "Node ${i}"; \
-    python3 ${BASE_DIR}/setup_k8s-dirs.py -t 172.16.30.${i}
+    python3 ${BASE_DIR}/setup_k8s_dirs.py -t 172.16.30.${i}
     scp ${HOME}/etc/* admin@172.16.30.${i}:kubernetes/etc
 done
