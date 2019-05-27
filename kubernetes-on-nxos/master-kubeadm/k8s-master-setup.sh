@@ -65,6 +65,13 @@ sudo /usr/bin/systemctl enable kubelet
 # End Pre-Requisites for CentOS 7
 ###
 
+# Because of Sandbox networking persnicketiness, keep pulling until status 0
+TEST=1
+while [ ${TEST} -ne 0 ]; do
+    /usr/bin/kubeadm config images pull | /usr/bin/tee -a kubeadm-master.pull.output.txt
+    TEST=$?
+done
+
 # Configure master (will configure the kubelet so it starts)
 sudo /usr/bin/kubeadm init \
     --apiserver-advertise-address=${K8S_MASTER_IP} \
@@ -72,7 +79,7 @@ sudo /usr/bin/kubeadm init \
     --pod-network-cidr=${POD_CIDR} \
     --service-cidr=${SVC_CIDR} \
     --ignore-preflight-errors=NumCPU \
-    | /usr/bin/tee kubeadm-master.output.txt | /usr/bin/grep 'kubeadm join'
+    | /usr/bin/tee -a kubeadm-master.output.txt | /usr/bin/grep 'kubeadm join'
 
 # Need to record the kubeadm join command for potential future use
 
@@ -86,5 +93,5 @@ sudo /bin/mkdir -p /root/.kube
 sudo /usr/bin/cp -i /etc/kubernetes/admin.conf /root/.kube/config
 
 # Set up CNI
-sudo /usr/bin/kubectl apply -f "${CNI_URL"
+sudo /usr/bin/kubectl apply -f "${CNI_URL}"
 
