@@ -43,6 +43,9 @@ commands = [
     ### Bring Docker back up for production
     'run bash sudo service docker start',
 
+    ### Save the configuration
+    'copy running-config startup-config',
+
 ]
 
 if __name__ == '__main__':
