@@ -37,6 +37,10 @@ sudo /usr/bin/sed -i -e 's,^SELINUX=.*$,SELINUX=disabled,g' /etc/sysconfig/selin
 sudo /usr/sbin/swapoff -a
 sudo /usr/bin/sed -i -e 's,.* swap .*,,' /etc/fstab
 
+# Disable IPv6 routing
+sudo /usr/sbin/sysctl net.ipv6.conf.all.disable_ipv6=1
+sudo bash -c "echo 'net.ipv6.conf.all.disable_ipv6 = 1' > /etc/sysctl.d/10-disable-ipv6.conf"
+
 # Add Kubernetes YUM repository
 sudo /usr/bin/bash -c 'cat > /etc/yum.repos.d/kubernetes.repo <<EOF
 [kubernetes]
