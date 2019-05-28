@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export BASE_DIR=$(dirname $0)
+export BASE_DIR=$PWD
 
 # Create a binary tree
 mkdir ${HOME}/bin
