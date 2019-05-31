@@ -33,12 +33,17 @@ commands = [
     'run bash sudo /sbin/resize2fs /bootflash/dockerpart',
     'run bash sudo e2fsck -f /bootflash/dockerpart',
 
-    ### Secure your Docker
+    ### Secure your Docker (setup)
     'run bash sudo groupadd dockremap -r',
     'run bash sudo useradd dockremap -r -g dockremap',
     'run bash sudo bash -c \'echo "dockremap:123000:65536" >> /etc/subuid\'',
     'run bash sudo bash -c \'echo "dockremap:123000:65536" >> /etc/subgid\'',
+
+    ### Secure your control plane (restrict docker to /ext_ser/)
     'run bash sudo sed -i -e \'s,^other_args=.*,other_args="--debug=true --cgroup-parent=/ext_ser/",g\' /etc/sysconfig/docker',
+
+    ### Make /var/lib/docker shareable (for Kubernetes)
+    'run bash sudo sed -i -e \'s,mount -t ext4 $loopd,mount -t ext4 --make-shared $loopd,g\' /etc/init.d/docker',
 
     ### Bring Docker back up for production
     'run bash sudo service docker start',
