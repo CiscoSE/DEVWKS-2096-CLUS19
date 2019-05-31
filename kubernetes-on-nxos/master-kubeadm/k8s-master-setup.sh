@@ -2,8 +2,8 @@
 
 # IP Addressing specific to DEVNET Sandbox
 export K8S_MASTER_IP=10.10.20.20
-export SVC_CIDR=172.16.30.192/27
-export K8S_VERSION=1.14.2
+export SVC_CIDR=10.10.20.64/27
+export K8S_VERSION=1.13.6
 export CALICO_VERSION=3.7
 
 # Default to using Flannel for CNI
