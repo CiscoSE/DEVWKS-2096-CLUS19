@@ -38,7 +38,7 @@ commands = [
     'run bash sudo useradd dockremap -r -g dockremap',
     'run bash sudo bash -c \'echo "dockremap:123000:65536" >> /etc/subuid\'',
     'run bash sudo bash -c \'echo "dockremap:123000:65536" >> /etc/subgid\'',
-    'run bash sudo perl -pi -e \'s,^other_args=.*,other_args="--debug=true --cgroup-parent=/ext_ser/",g\' /etc/sysconfig/docker',
+    'run bash sudo sed -i -e \'s,^other_args=.*,other_args="--debug=true --cgroup-parent=/ext_ser/",g\' /etc/sysconfig/docker',
 
     ### Bring Docker back up for production
     'run bash sudo service docker start',
