@@ -7,7 +7,13 @@ Repository for Cisco Live San Diego 2019 DEVNET Workshop session DEVWKS-2096 : S
 = General Workflow =
 
 * Reserve a DEVNET Sandbox
+
+== docker-on-nxos ==
+
 * Deploy and configure Docker on all Nexus 9000 images
+
+== kubernetes-on-nxos ==
+
 * Setup DEVBOX jumphost as Kubernetes Master Node
 * Generate and distribute required Kubernetes worker configuration files
 * Start kubelet on each worker node (Nexus 9000)
