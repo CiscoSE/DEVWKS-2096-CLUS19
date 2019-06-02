@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+###
+###  Note:  Even though framework for using Calico is in place,
+###  Calico CNI functionality has not been tested at this time.
+###  Only Flannel is supported today.
+###
 
 # IP Addressing specific to DEVNET Sandbox
 export K8S_MASTER_IP=10.10.20.20
@@ -72,12 +77,14 @@ sudo /usr/bin/systemctl enable kubelet
 # Because of Sandbox networking persnicketiness, keep pulling until status 0
 TEST=1
 while [ ${TEST} -ne 0 ]; do
-    /usr/bin/kubeadm config images pull | /usr/bin/tee -a kubeadm-master.pull.output.txt
+    /usr/bin/kubeadm config images pull --kubernetes-version ${K8S_VERSION} \
+       | /usr/bin/tee -a kubeadm-master.pull.output.txt
     TEST=$?
 done
 
 # Configure master (will configure the kubelet so it starts)
 sudo /usr/bin/kubeadm init \
+    --kubernetes-version ${K8S_VERSION} \
     --apiserver-advertise-address=${K8S_MASTER_IP} \
     --node-name=${K8S_MASTER_IP} \
     --pod-network-cidr=${POD_CIDR} \
@@ -96,6 +103,33 @@ sudo /usr/bin/chown $(id -u):$(id -g) $HOME/.kube/config
 sudo /bin/mkdir -p /root/.kube
 sudo /usr/bin/cp -i /etc/kubernetes/admin.conf /root/.kube/config
 
-# Set up CNI
-sudo /usr/bin/kubectl apply -f "${CNI_URL}"
+# Add Service Account to Admission Plugins
+sudo sed -i -e 's/plugins=NodeRestriction$/plugins=NodeRestriction,ServiceAccount/' /etc/kubernetes/manifests/kube-apiserver.yaml 
+
+# Ideally, you just reboot.  But, we are scripting this... so, stop the kubelet
+sudo systemctl stop kubelet
+
+# Stop docker - killing all Kubernetes components
+sudo systemctl stop docker
+
+# Start Docker and clean up stopped containers
+sudo systemctl start docker
+sudo bash -c "docker ps -a | awk '/Exited/ {print \$NF;}' | xargs -n1 docker rm"
+
+# Start the Kubelet so it fires up all the Kubernetes control plane (/etc/kubernetes/manifests)
+sudo systemctl start kubelet
+
+# Set up CNI - wait 75 seconds for control plane to come online
+echo "Waiting 75 seconds for Kubernetes control plane to stabilize"
+sleep 75
+echo "... Proceeding with CNI installation ..."
+
+# If Flannel, we need to make YAML changes
+if [ "${CNI_STYLE}" == "flannel" ]; then
+    wget -q -O kube-flannel.yml "${CNI_URL}"
+    /usr/bin/sed -i -e 's,privileged: false,privileged: true,; s/vxlan/udp/' kube-flannel.yml
+    sudo /usr/bin/kubectl apply -f kube-flannel.yml
+else
+    sudo /usr/bin/kubectl apply -f "${CNI_URL}"
+fi
 
