@@ -11,6 +11,7 @@
 == Installation ==
 
 * (On Nexus switch) Enable HTTP tcp/80 (if needed)
+
 ```
 ! Enter config mode
 configure terminal
@@ -20,8 +21,10 @@ nxapi http port 80
 !
 ! Exit
 end
+```
 
 * (On server) Activate Python 3.6 (or newer) virtual environment
+
 ```python
 python3 config_docker.py -t NXOS_MGMT_IP
 ```
