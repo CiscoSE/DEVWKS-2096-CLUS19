@@ -74,7 +74,7 @@ export DNS_IP=$(ip netns exec management kubectl get services -n kube-system | a
 
 # As a precaution, let's ensure the Docker engine is started 
 # correctly with the shared /var/lib/docker mount point
-if ! /usr/bin/test -f ${K8S_ETC}/etc/docker.remounted
+if ! /usr/bin/test -f ${K8S_ETC}/etc/docker.remounted; then
     # Make sure we schedule I/O flush to disk 
     sync
 
