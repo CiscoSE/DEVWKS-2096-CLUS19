@@ -59,7 +59,7 @@ popd
 
 * Note: you will be prompted for the Nexus 9000v admin user password for each host
 
-```
+```bash
 pushd ${HOME}/code/DEVWKS-2096-CLUS19/kubernetes-on-nxos/worker-configs
 
 # Verify N9Ks up and SSH host keys cached
@@ -77,3 +77,31 @@ popd
 == Nexus 9000v - Kubernetes Worker Deployment ==
 
 * Pre-requisite: [Deploy Docker on NX-OS](../docker-on-nxos/README.md)
+
+* Push *k8s-worker-setup.sh* from DEVBOX to Nexus switches (you will be prompted for admin password)
+
+```bash
+pushd ${HOME}/code/DEVWKS-2096-CLUS19/kubernetes-on-nxos/worker-kubelet
+
+for i in $(seq 1 4); do \
+    echo "Node nx-os9000v-${i}"; \
+    scp k8s-worker-setup.sh admin@172.16.30.10${i}:kubernetes/bin
+done
+
+popd
+```
+
+* SSH into a Nexus 9000v switch (example here is nx-os9000v-1, 172.16.30.101)
+
+```bash
+ssh admin@172.16.30.101
+
+! Connect into the bash shell on the Nexus 9000v
+run bash sudo ip netns exec management bash
+
+# Now in standard Linux bash shell, running as root, in VRF management
+
+###  Setup and start the kubelet
+bash /bootflash/kubernetes/bin/k8s-worker-setup.sh
+
+```
