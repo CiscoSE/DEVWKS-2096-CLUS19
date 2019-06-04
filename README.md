@@ -2,17 +2,17 @@
 
 Repository for Cisco Live San Diego 2019 DEVNET Workshop session DEVWKS-2096 : Safely using your Nexus 9000 switches as a Kubernetes cluster
 
-= Overview =
+#  Overview
 
-= General Workflow =
+# General Workflow
 
 * Reserve a DEVNET Sandbox
 
-== docker-on-nxos ==
+## docker-on-nxos
 
 * Deploy and configure Docker on all Nexus 9000 images
 
-== kubernetes-on-nxos ==
+## kubernetes-on-nxos
 
 * Setup DEVBOX jumphost as Kubernetes Master Node
 * Generate and distribute required Kubernetes worker configuration files

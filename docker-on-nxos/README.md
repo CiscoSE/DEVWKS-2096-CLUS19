@@ -1,4 +1,4 @@
-== Prerequisites ==
+# Prerequisites
 
 * NX-OS version 9.2(1) or newer
   * Nexus 9000 switches with >8GB RAM
@@ -8,7 +8,7 @@
 * DEVNET Sandbox “Open NX-OS with Nexus 9Kv Lab” Reservation
 * VPN Connection into the Sandbox
 
-== Installation ==
+# Installation
 
 * (On Nexus switch) Enable HTTP tcp/80 (if needed)
 
