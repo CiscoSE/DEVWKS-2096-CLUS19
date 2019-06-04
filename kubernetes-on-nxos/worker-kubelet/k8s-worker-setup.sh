@@ -98,7 +98,7 @@ if ! /usr/bin/test -f ${K8S_ETC}/etc/docker.remounted; then
     sleep 2
 
     # Make notice we've been here already
-    touch ${K8S_ETC}/etc/docker.remounted
+    touch ${K8S_ETC}/docker.remounted
 fi
 
 # Fire up the kubelet
