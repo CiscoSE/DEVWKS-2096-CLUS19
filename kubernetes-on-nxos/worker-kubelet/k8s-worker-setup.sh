@@ -57,11 +57,17 @@ cp ${K8S_ETC}/ca.crt /var/lib/docker/kubernetes/pki
 if ! /usr/bin/test -f /usr/bin/kubectl; then 
     echo "Fetching and installing Kubernetes binaries"
     curl -s -o kubectl -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl
-    curl -s -o kubelet -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubelet
     curl -s -o kubeadm -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubeadm
-    chmod +x kubectl kubelet kubeadm
+    chmod +x kubectl kubeadm
     cp kube* /usr/bin
     mv kube* /bootflash/kubernetes/bin 
+fi
+
+if ! /usr/bin/test -f /usr/bin/kubelet; then 
+    curl -s -o kubelet -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubelet
+    chmod +x kubelet
+    cp kubelet /usr/bin
+    mv kubelet /bootflash/kubernetes/bin 
 fi
 
 #  Download CRI tools
@@ -92,7 +98,7 @@ export DNS_IP=$(ip netns exec management kubectl get services -n kube-system | a
 
 # As a precaution, let's ensure the Docker engine is started 
 # correctly with the shared /var/lib/docker mount point
-if ! /usr/bin/test -f ${K8S_ETC}/etc/docker.remounted; then
+if ! /usr/bin/test -f ${K8S_ETC}/docker.remounted; then
     # Make sure we schedule I/O flush to disk 
     sync
 
