@@ -62,6 +62,12 @@ EOF
 # Install Kubernetes binaries
 sudo /usr/bin/yum install -y kubeadm-${K8S_VERSION}-0 kubelet-${K8S_VERSION}-0 kubectl-${K8S_VERSION}-0
 
+# Make sure package installation had no errors
+if [ "$?" -ne "0" ]; then
+    echo "Exiting script on Kubernetes package installation errors"
+    exit 1
+fi
+
 # Convert docker to use systemd based cgroups management, not native cgroupfs
 sudo /usr/bin/sed -i -e 's,^ExecStart=/usr/bin/dockerd$,ExecStart=/usr/bin/dockerd --exec-opt native.cgroupdriver=systemd,' /usr/lib/systemd/system/docker.service
 sudo /usr/bin/systemctl daemon-reload
@@ -77,8 +83,7 @@ sudo /usr/bin/systemctl enable kubelet
 # Because of Sandbox networking persnicketiness, keep pulling until status 0
 TEST=1
 while [ ${TEST} -ne 0 ]; do
-    /usr/bin/kubeadm config images pull --kubernetes-version ${K8S_VERSION} \
-       | /usr/bin/tee -a kubeadm-master.pull.output.txt
+    /usr/bin/kubeadm config images pull --kubernetes-version ${K8S_VERSION}
     TEST=$?
 done
 
@@ -106,11 +111,15 @@ sudo /usr/bin/cp -i /etc/kubernetes/admin.conf /root/.kube/config
 # Add Service Account to Admission Plugins
 sudo sed -i -e 's/plugins=NodeRestriction$/plugins=NodeRestriction,ServiceAccount/' /etc/kubernetes/manifests/kube-apiserver.yaml 
 
+# Need to pause long enough for all containers come online (safety first)
+sleep 90
+
 # Ideally, you just reboot.  But, we are scripting this... so, stop the kubelet
 sudo systemctl stop kubelet
 
 # Stop docker - killing all Kubernetes components
 sudo systemctl stop docker
+sleep 5
 
 # Start Docker and clean up stopped containers
 sudo systemctl start docker
@@ -120,8 +129,8 @@ sudo bash -c "docker ps -a | awk '/Exited/ {print \$NF;}' | xargs -n1 docker rm"
 sudo systemctl start kubelet
 
 # Set up CNI - wait 75 seconds for control plane to come online
-echo "Waiting 75 seconds for Kubernetes control plane to stabilize"
-sleep 75
+echo "Waiting 90 seconds for Kubernetes control plane to stabilize"
+sleep 90
 echo "... Proceeding with CNI installation ..."
 
 # If Flannel, we need to make YAML changes
