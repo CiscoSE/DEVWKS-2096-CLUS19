@@ -15,19 +15,11 @@ export K8S_ETC=${K8S_DIR}/etc
 
 # Skip some initialization steps if not needed
 if ! /usr/bin/test -d /var/lib/docker/kubernetes/manifests; then
-    echo "Creating persistent storage for Kubernetes"
-
-    # Linked /var/lib/kubelet into /var/lib/docker/kubelet
-    mkdir -p /var/lib/docker/kubelet
-    ln -s /var/lib/docker/kubelet /var/lib/kubelet
+    echo "Creating persistent storage for configurations"
 
     # Make persistent storage for the CNI configs
     mkdir -p /var/lib/docker/cni/etc/net.d
     ln -s /var/lib/docker/cni/etc /etc/cni
-
-    # Make persistent storage for the CNI binaries
-    mkdir -p /var/lib/docker/cni/bin
-    ln -s /var/lib/docker/cni /opt/cni
 
     # Make persistent storage for the Kubernetes configs
     mkdir -p /var/lib/docker/kubernetes
@@ -36,6 +28,22 @@ if ! /usr/bin/test -d /var/lib/docker/kubernetes/manifests; then
     ln -s /var/lib/docker/kubernetes /etc/kubernetes
     cp ${K8S_ETC}/admin.conf /var/lib/docker/kubernetes
 
+fi
+
+# Link /var/lib/kubelet into /var/lib/docker/kubelet
+if ! /usr/bin/test -e /var/lib/kubelet; then
+    echo "Creating persistent storage for Kubelet"
+
+    mkdir -p /var/lib/docker/kubelet
+    ln -s /var/lib/docker/kubelet /var/lib/kubelet
+fi
+
+# Make persistent storage for the CNI binaries
+if ! /usr/bin/test -e /opt/cni; then
+    echo "Creating persistent storage for CNI binaries"
+
+    mkdir -p /var/lib/docker/cni/bin
+    ln -s /var/lib/docker/cni /opt/cni
 fi
 
 # Obtain my IP (changing netns redundant but left in for safety)
@@ -47,22 +55,32 @@ cp ${K8S_ETC}/ca.crt /var/lib/docker/kubernetes/pki
 
 #  Download kubectl, kubelet, and kubeadm
 if ! /usr/bin/test -f /usr/bin/kubectl; then 
-    curl -o kubectl -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl
-    curl -o kubelet -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubelet
-    curl -o kubeadm -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubeadm
+    echo "Fetching and installing Kubernetes binaries"
+    curl -s -o kubectl -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl
+    curl -s -o kubelet -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubelet
+    curl -s -o kubeadm -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubeadm
     chmod +x kubectl kubelet kubeadm
     cp kube* /usr/bin
     mv kube* /bootflash/kubernetes/bin 
 fi
 
-#  Download CNI tools
+#  Download CRI tools
 if ! /usr/bin/test -f /usr/bin/crictl; then
+    echo "Fetching and installing CRI tools"
+
     wget -q https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRI_VERSION}/crictl-v${CRI_VERSION}-linux-amd64.tar.gz
+
+    tar -xvf crictl-v${CRI_VERSION}-linux-amd64.tar.gz -C ${K8S_DIR}/bin
+    tar -xvf crictl-v${CRI_VERSION}-linux-amd64.tar.gz -C /usr/bin
+fi
+
+# Fetch the CNI tools needed by Kubelet
+if ! /usr/bin/test -f /opt/cni/bin/bridge; then
+    echo "Fetching and installing CNI tools"
+
     wget -q https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
 
     tar -xvf cni-plugins-linux-amd64-v${CNI_VERSION}.tgz -C /opt/cni/bin
-    tar -xvf crictl-v${CRI_VERSION}-linux-amd64.tar.gz -C ${K8S_DIR}/bin
-    tar -xvf crictl-v${CRI_VERSION}-linux-amd64.tar.gz -C /usr/bin
 fi
 
 #  Bring the cluster kubeconfig file into admin user's environment
@@ -109,5 +127,8 @@ nohup /usr/bin/kubelet --register-node=true \
     --cluster-dns="${DNS_IP}" \
     --feature-gates="SupportPodPidsLimit=False" \
     --allow-privileged=true \
+    --network-plugin=cni \
+    --cni-bin-dir=/opt/cni/bin \
+    --cni-conf-dir=/etc/cni/net.d \
     --kubeconfig=/etc/kubernetes/${MY_IP}-kubelet.yaml > ${K8S_DIR}/kubelet.log 2>&1 < /dev/null &
 
