@@ -13,17 +13,17 @@ sudo date -s "$(date --date='1 hour ago')"
 sudo hwclock --systohc
 ```
 
-# Instructions
+## Instructions
 
 ```bash
 bash k8s-master-setup.sh
 ```
 
-# Validation
+## Validation
 
 * Takes about 60-75 seconds for everything to settle down
 
-## Cluster Nodes
+### Cluster Nodes
 
 ```bash
 $ kubectl get nodes
@@ -31,7 +31,7 @@ NAME          STATUS   ROLES    AGE   VERSION
 10.10.20.20   Ready    master   13m   v1.13.6 
 ```
 
-## Cluster System Daemonsets
+### Cluster System Daemonsets
 
 ```bash
 $ kubectl -n kube-system get daemonset
@@ -44,7 +44,7 @@ kube-flannel-ds-s390x     0         0         0       0            0           b
 kube-proxy                1         1         1       1            1           <none>                            14m
 ```
 
-## Cluster System Deployments
+### Cluster System Deployments
 
 ```bash
 $ kubectl -n kube-system get deployments
@@ -52,7 +52,7 @@ NAME      READY   UP-TO-DATE   AVAILABLE   AGE
 coredns   2/2     2            2           14m
 ```
 
-## Cluster System Pods
+### Cluster System Pods
 
 ```bash
 $ kubectl -n kube-system get pods
