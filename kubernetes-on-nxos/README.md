@@ -21,9 +21,9 @@ we need.
 * [DEVNET Sandbox “Open NX-OS with Nexus 9Kv Lab” Reservation](https://devnetsandbox.cisco.com/)
 * VPN Connection into the Sandbox
 
-# Instructions
+## Instructions
 
-## DEVBOX Server - Kubernetes Master
+### DEVBOX Server - Kubernetes Master
 
 * SSH into the DEVBOX jumphost
 
@@ -65,7 +65,7 @@ popd
 
 * Check the [master-kubeadm README.md](master-kubeadm/README.md) for validation commands and output
 
-## DEVBOX Server - Kubernetes Worker Configs
+### DEVBOX Server - Kubernetes Worker Configs and Setup
 
 * Note: you will be prompted for the Nexus 9000v admin user password for each host
 
@@ -84,10 +84,6 @@ bash -x k8s-client-configs.sh
 popd
 ```
 
-## Nexus 9000v - Kubernetes Worker Deployment
-
-* Pre-requisite: [Deploy Docker on NX-OS](../docker-on-nxos/README.md)
-
 * Push *k8s-worker-setup.sh* from DEVBOX to Nexus switches (you will be prompted for admin password)
 
 ```bash
@@ -101,6 +97,24 @@ done
 popd
 ```
 
+### VIRL Server - Add static route for SVC CIDR reachability 
+
+* Connect to VIRL server (virl/VIRL)
+
+```bash
+ssh virl@10.10.20.160
+```
+
+* Add static route in standard Linux way
+
+```bash
+sudo ip route add 10.10.20.64/27 via 10.10.20.20
+```
+
+### Nexus 9000v - Kubernetes Worker Deployment
+
+* Pre-requisite: [Deploy Docker on NX-OS](../docker-on-nxos/README.md)
+
 * SSH into a Nexus 9000v switch (example here is nx-os9000v-1, 172.16.30.101)
 
 ```bash
@@ -113,5 +127,4 @@ run bash sudo ip netns exec management bash
 
 ###  Setup and start the kubelet
 bash /bootflash/kubernetes/bin/k8s-worker-setup.sh
-
 ```
