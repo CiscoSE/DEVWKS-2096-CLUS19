@@ -46,7 +46,7 @@ if ! /usr/bin/test -e /opt/cni; then
     ln -s /var/lib/docker/cni /opt/cni
 fi
 
-if ! /usr/bin/test -e /var/lib/cnil then
+if ! /usr/bin/test -e /var/lib/cni; then
     echo "Creating persistent storage for CNI configs"
 
     mkdir -p /var/lib/docker/cni/lib
