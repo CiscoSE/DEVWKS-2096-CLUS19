@@ -46,6 +46,13 @@ if ! /usr/bin/test -e /opt/cni; then
     ln -s /var/lib/docker/cni /opt/cni
 fi
 
+if ! /usr/bin/test -e /var/lib/cnil then
+    echo "Creating persistent storage for CNI configs"
+
+    mkdir -p /var/lib/docker/cni/lib
+    ln -s /var/lib/docker/cni/lib /var/lib/cni
+fi
+
 # Obtain my IP (changing netns redundant but left in for safety)
 export MY_IP=$(ip netns exec management ip addr show eth1 | awk '/inet/ { print $2; }' | cut -d/ -f1)
 
