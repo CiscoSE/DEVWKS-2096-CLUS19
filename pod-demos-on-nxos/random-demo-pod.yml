@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-pod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-pod
+  template:
+    metadata:
+      labels:
+        app: demo_pod
+    spec:
+      hostNetwork: true
+      containers:
+      - name: demo-pod
+        image: gvevsetim/demo_pod_container:v1
+        ports:
+        - containerPort: 1234
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "50Mi"
+          limits:
+            cpu: "100m"
+            memory: "50Mi"
