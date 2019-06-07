@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: demo-pod
+  name: demo-deploy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: demo-pod
+      app: demo-deploy
   template:
     metadata:
       labels:
-        app: demo-pod
+        app: demo-deploy
     spec:
       hostNetwork: true
       containers:
-      - name: demo-pod
+      - name: demo-deploy
         image: gvevsetim/demo_pod_container:1
         ports:
         - containerPort: 1234
