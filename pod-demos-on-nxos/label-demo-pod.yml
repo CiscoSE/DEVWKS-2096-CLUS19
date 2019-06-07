@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-label
+  template:
+    metadata:
+      labels:
+        app: demo-label
+    spec:
+      hostNetwork: true
+      containers:
+      - name: demo-label
+        image: gvevsetim/demo_pod_container:1
+        ports:
+        - containerPort: 1234
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "50Mi"
+          limits:
+            cpu: "100m"
+            memory: "50Mi"
+      nodeSelector:
+        kubernetes.io/hostname: 172.16.30.104

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: demo-ds
+spec:
+  selector:
+    matchLabels:
+      name: demo-ds
+  template:
+    metadata:
+      labels:
+        name: demo-ds
+    spec:
+      containers:
+      - name: demo-ds
+        image: gvevsetim/demo_pod_container:1
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "50Mi"
+          limits:
+            cpu: "100m"
+            memory: "50Mi"
