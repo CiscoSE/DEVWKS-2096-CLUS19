@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        app: demo_pod
+        app: demo-pod
     spec:
       hostNetwork: true
       containers:
