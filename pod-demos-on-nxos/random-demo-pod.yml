@@ -15,7 +15,7 @@ spec:
       hostNetwork: true
       containers:
       - name: demo-pod
-        image: gvevsetim/demo_pod_container:v1
+        image: gvevsetim/demo_pod_container:1
         ports:
         - containerPort: 1234
         resources:
