@@ -11,6 +11,7 @@ spec:
       labels:
         name: demo-ds
     spec:
+      hostNetwork: true
       containers:
       - name: demo-ds
         image: gvevsetim/demo_pod_container:1
