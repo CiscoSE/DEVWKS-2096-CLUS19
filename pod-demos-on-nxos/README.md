@@ -121,11 +121,6 @@ kubectl get pods -o wide
 * [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/)
 * [Taints and Tolerations](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/)
 * [Updating a Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment)
-* 
-https://www.youtube.com/watch?v=6v_BDHIgOY8&feature=youtu.be
-https://kubernetes.io/docs/concepts/configuration/overview/
-https://www.slideshare.net/weaveworks/introduction-to-the-container-network-interface-cni
-https://www.dasblinkenlichten.com/understanding-cni-container-networking-interface/
 
 # Appendix: Other Useful Commands
 
