@@ -143,5 +143,5 @@ nohup /usr/bin/kubelet --register-node=true \
     --network-plugin=cni \
     --cni-bin-dir=/opt/cni/bin \
     --cni-conf-dir=/etc/cni/net.d \
+    --cgroup-root='/ext_ser/' \
     --kubeconfig=/etc/kubernetes/${MY_IP}-kubelet.yaml > ${K8S_DIR}/kubelet.log 2>&1 < /dev/null &
-
