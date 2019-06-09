@@ -61,3 +61,54 @@ source ~/workspace/venv/bin/activate
 python3 config_docker.py -t 127.0.0.1 -p 8080
 ```
 
+## Demonstrate CPU protections on local Nexus 9000v
+
+The above script places the Docker daemon into the /ext_ser/ cgroup
+that contains CPU usage to 40% (per core).  This demo will simply
+demonstrate that the CPU load is properly capped.
+
+* Session 1: SSH into a switch and run top
+
+```bash
+# Run command from DEVWKS-2096-CLUS19/docker-on-nxos/vagrant directory
+
+# Laptop bash command
+vagrant ssh
+
+! NX-OS Commands (non-privileged network admin user)
+run bash
+
+### NX-OS Linux Bash Commands
+
+# How many vCPUs do we have
+grep processor /proc/cpuinfo
+
+# Let's watch the processes
+top
+```
+
+* Session 2: SSH into the same switch and start the stress container
+
+```bash
+# Run command from DEVWKS-2096-CLUS19/docker-on-nxos/vagrant directory
+
+# Laptop bash command
+vagrant ssh
+
+! NX-OS Commands (privileged root user, management VRF)
+run bash sudo ip netns exec management bash
+
+### NX-OS Linux Bash Commands
+
+# Nexus 9000v only has 2 vCPUs so stress them both
+docker run -it --name=stress progrium/stress --cpu 2 --timeout 20
+docker rm stress
+
+# But what about a container that will spin up 6 processes/threads?
+docker run -it --name=stress progrium/stress --cpu 6 --timeout 20
+docker rm stress
+
+# See the magic config file
+cat /etc/sysconfig/docker
+
+```
