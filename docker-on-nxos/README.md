@@ -33,6 +33,8 @@ python3 config_docker.py -t NXOS_MGMT_IP
 
 ## Demonstrate CPU protections
 
+Note: During the session, we will do this in a local Vagrant Nexus 9000v.
+
 The above script places the Docker daemon into the /ext_ser/ cgroup
 that contains CPU usage to 40% (per core).  This demo will simply
 demonstrate that the CPU load is properly capped.
