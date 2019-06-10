@@ -48,6 +48,12 @@ copy running-config startup-config
 exit
 ```
 
+Or...  if you like super-cryptic command line tricks:
+
+```bash
+printf "configure terminal\nfeature nxapi\nnxapi http port 80\nend\ncopy running-config startup-config\n" | vagrant ssh
+```
+
 ## Configure Docker on local Nexus 9000v
 
 You'll need to have a Python virtual environment with a
