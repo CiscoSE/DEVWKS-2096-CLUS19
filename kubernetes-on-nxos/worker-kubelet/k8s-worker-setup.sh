@@ -63,15 +63,15 @@ cp ${K8S_ETC}/ca.crt /var/lib/docker/kubernetes/pki
 #  Download kubectl, kubelet, and kubeadm
 if ! /usr/bin/test -f /usr/bin/kubectl; then 
     echo "Fetching and installing Kubernetes binaries"
-    curl -s -o kubectl -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl
-    curl -s -o kubeadm -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubeadm
+    curl -o kubectl -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl
+    curl -o kubeadm -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubeadm
     chmod +x kubectl kubeadm
     cp kube* /usr/bin
     mv kube* /bootflash/kubernetes/bin 
 fi
 
 if ! /usr/bin/test -f /usr/bin/kubelet; then 
-    curl -s -o kubelet -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubelet
+    curl -o kubelet -k https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubelet
     chmod +x kubelet
     cp kubelet /usr/bin
     mv kubelet /bootflash/kubernetes/bin 
@@ -81,7 +81,7 @@ fi
 if ! /usr/bin/test -f /usr/bin/crictl; then
     echo "Fetching and installing CRI tools"
 
-    wget -q https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRI_VERSION}/crictl-v${CRI_VERSION}-linux-amd64.tar.gz
+    wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRI_VERSION}/crictl-v${CRI_VERSION}-linux-amd64.tar.gz
 
     tar -xvf crictl-v${CRI_VERSION}-linux-amd64.tar.gz -C ${K8S_DIR}/bin
     tar -xvf crictl-v${CRI_VERSION}-linux-amd64.tar.gz -C /usr/bin
@@ -91,7 +91,7 @@ fi
 if ! /usr/bin/test -f /opt/cni/bin/bridge; then
     echo "Fetching and installing CNI tools"
 
-    wget -q https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
+    wget https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz
 
     tar -xvf cni-plugins-linux-amd64-v${CNI_VERSION}.tgz -C /opt/cni/bin
 fi
@@ -143,5 +143,4 @@ nohup /usr/bin/kubelet --register-node=true \
     --network-plugin=cni \
     --cni-bin-dir=/opt/cni/bin \
     --cni-conf-dir=/etc/cni/net.d \
-    --cgroup-root='/ext_ser/' \
     --kubeconfig=/etc/kubernetes/${MY_IP}-kubelet.yaml > ${K8S_DIR}/kubelet.log 2>&1 < /dev/null &
