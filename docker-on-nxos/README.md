@@ -42,14 +42,20 @@ demonstrate that the CPU load is properly capped.
 * Session 1: SSH into a switch and run top
 
 ```bash
-ssh admin@172.16.30.101
+ssh admin@172.16.30.102
+
+! On Nexus CLI
+run bash
 top
 ```
 
 * Session 2: SSH into the same switch and start the stress container
 
 ```bash
-ssh admin@172.16.30.101
+ssh admin@172.16.30.102
+
+! On Nexus CLI
+run bash sudo ip netns exec management bash
 
 # Nexus 9000v only has 2 vCPUs so stress them both
 docker run -it --name=stress progrium/stress --cpu 2 --timeout 20
@@ -58,4 +64,11 @@ docker rm stress
 # But what about a container that will spin up 6 processes/threads?
 docker run -it --name=stress progrium/stress --cpu 6 --timeout 20
 docker rm stress
+
+# Exit NXOS Bash
+exit
+
+# Exit NXOS CLI
+exit
+
 ```
